@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import FormulakuskiImage from './formulakuskiImage.jpg';
 import TurvallinenImage from './turvallinenImage.jpg';
@@ -6,6 +6,13 @@ import SeikkalijaImage from './seikkailijaImage2.jpg';
 import LuonnonYstvavaImage from './luonnonystavaImage.jpg';
 
 function Result({ answers, resetTest }) {
+  const [fade, setFade] = useState('fade-in');
+
+  useEffect(() => {
+    // Tämä efekti laukaisee fade-in animaation, kun komponentti ladataan
+    setFade('fade-in');
+  }, []);
+
   const getResult = () => {
     const resultTypes = [
       'huolellinen kuljettaja!',
@@ -82,7 +89,7 @@ function Result({ answers, resetTest }) {
   const result = getResult();
 
   return (
-    <div className='container-result'>
+    <div className={`result-container ${fade}`}>
       <h2>Olet {result.type}</h2>
       <img src={result.image} alt={result.type} className="result-image" />
       <p>{result.description}</p>

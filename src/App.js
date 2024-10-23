@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import Questions from './questions';
 import Result from './result';
@@ -9,22 +9,38 @@ function App() {
   const [phone, setPhone] = useState('');
   const [step, setStep] = useState(1);
   const [answers, setAnswers] = useState({});
+  const [errorMessage, setErrorMessage] = useState('');
+  const [fade, setFade] = useState('fade-in');
 
-  const handleNextStep = () => {
-    if (step === 2) {
-      setStep(2.5); // Siirrytään extra vaiheeseen
-    } else if (step === 2.5) {
-      setStep(3); // Siirrytään lopputulokseen (tai seuraavaan vaiheeseen)
-    } else {
-      setStep(step + 1); // Jatketaan normaalisti muissa tilanteissa
-    }
+  const validatePhoneNumber = (phone) => {
+    const phoneRegex = /^(040|041|044|045|050)\d{5,}$/;
+    return phoneRegex.test(phone);
   };
 
+  const handleNextStep = () => {
+    setFade('fade-out'); // Fade-out ennen vaiheen vaihtoa
+    setTimeout(() => {
+      if (step === 2) {
+        setStep(2.5); // Siirrytään extra vaiheeseen
+      } else if (step === 2.5) {
+        setStep(3); // Siirrytään lopputulokseen (tai seuraavaan vaiheeseen)
+      } else {
+        setStep(step + 1); // Jatketaan normaalisti muissa tilanteissa
+      }
+      setFade('fade-in'); // Fade-in seuraavalle vaiheelle
+    }, 500); // Animaatio kestää 500ms
+  };
+
+  useEffect(() => {
+    setFade('fade-in'); // Vaihda fade-in uuteen vaiheeseen siirtymisen jälkeen
+  }, [step]);
+
   const handleSubmitUser = () => {
-    if (name && phone) {
+    if (name && validatePhoneNumber(phone)) {
+      setErrorMessage(''); // Tyhjennä virheviesti, jos kaikki on ok
       handleNextStep();
     } else {
-      alert('Lisää yhteystietosi, jotta pääset täyttämään testin');
+      setErrorMessage('Lisää nimesi ja oikea puhelinnumero (alku 040, 041, 044, 045 tai 050).');
     }
   };
 
@@ -39,7 +55,7 @@ function App() {
     <div className='background-container'> {/* Taustakontti */}
       <div className='content-container'> {/* Sisällön kontti */}
         {step === 1 && (
-          <div className='form-container'>
+          <div className={`form-container ${fade}`}>
               <h1>Millainen autoilija olet?</h1>
               <input className='contact-input'
                 type="text"
@@ -55,6 +71,7 @@ function App() {
                 onChange={(e) => setPhone(e.target.value)}
                 required
               />
+              {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
               <p>Lisää yhteystietosi niin pääset täyttämään testin. Yhteystietoja ei luovuteta kolmasille osapuolille. Jättämällä yhteystietosi olet mukana arvonnassa.</p>
               <button className='aloita-button' onClick={handleSubmitUser}>Aloita testi!</button>
               <p className='birra-solutions'>Powered by Birra Solutions</p>

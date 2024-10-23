@@ -1,5 +1,5 @@
-import React from 'react';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import './App.css'; // Varmista, että CSS-tiedostosi on mukana
 
 const handleSubmit = async (formData) => {
   try {
@@ -22,6 +22,8 @@ const handleSubmit = async (formData) => {
 };
 
 function Iftarjous({ onNextStep, name, phone, answers }) {
+  const [fade, setFade] = useState('fade-in'); // Aloitusfade-in
+
   const handleButtonClick = (action) => {
     const formData = {
       name,
@@ -31,14 +33,18 @@ function Iftarjous({ onNextStep, name, phone, answers }) {
     };
     
     handleSubmit(formData);
-    onNextStep();
+    
+    setFade('fade-out'); // Aloita fade-out
+    setTimeout(() => {
+      onNextStep(); // Siirry seuraavaan vaiheeseen fade-outin jälkeen
+    }, 500); // Odota animaation loppumista
   };
 
   return (
-    <div className='tarjous-container'>
+    <div className={`tarjous-container ${fade}`}>
       <h2>Voita 100€ S-ryhmän lahjakortti!</h2>
       <p className='tarjous-teksti'>Kilpailuita autosi vakuutus If:llä. Tarjousten ottaneiden kesken arvotaan 100€ S-ryhmän lahjakortti!</p>
-      <button onClick={() => handleButtonClick('pyydä tarjous')} className='tarjous-btn'>Pyydä tarjous!</button><br /> <br />
+      <button onClick={() => handleButtonClick('pyydä tarjous')} className='tarjous-btn'>Pyydä tarjous!</button><br /><br />
       <button onClick={() => handleButtonClick('näytä tulos')} className='tulos-btn'>Näytä tulos</button>
       <p className='birra-solutions'>Powered by Birra Solutions</p>
     </div>
